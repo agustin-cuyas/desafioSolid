@@ -1,4 +1,4 @@
+#include "clases.hpp"       //primera para que tome lo de abajo
 #include <iostream>
-#include "clases.hpp"
 
 using namespace std;
