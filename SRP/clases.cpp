@@ -1,8 +1,8 @@
 #include "mainHeader.hpp"
 #include "clases.hpp"
 
-//Vehiculo::Vehiculo(const string &marca, const string &modelo, const int anio, double kilometraje){}
-Vehiculo::Vehiculo(const string& tipo, const string& marca, const string& modelo, const int anio, double kilometraje) : tipo(tipo), marca(marca), modelo(modelo), anio(anio), kilometraje(kilometraje) {} //member initializer list
+Vehiculo::Vehiculo(const string& tipo, const string& marca, const string& modelo, const int anio, double kilometraje) 
+         : tipo(tipo), marca(marca), modelo(modelo), anio(anio), kilometraje(kilometraje) {} //member initializer list
 
 void Vehiculo::setTipo(const string& tipo)
 {
