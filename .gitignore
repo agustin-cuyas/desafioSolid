@@ -1,4 +1,5 @@
 *.docx
 *.txt
 *.exe
+*.json
 ./.vscode

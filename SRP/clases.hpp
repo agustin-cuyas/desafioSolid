@@ -6,13 +6,25 @@ using namespace std;
 
 class Vehiculo{
     public:
-        Vehiculo(const string& marca, const string& modelo, int anio, double kilometraje);
+        Vehiculo(const string& tipo, const string& marca, const string& modelo, const int anio, double kilometraje);
+
+        void setTipo(const string&);
+        string getTipo() const;
+
         void setMarca(const string&);
         string getMarca() const;
+
         void setModelo(const string&);
-        void setAnio(int);
+        string getModelo() const;
+
+        void setAnio(const int);
+        int getAnio() const;
+
         void setKilometraje(double);
+        double getKilometraje();
+
     protected: 
+        string tipo;
         string marca;
         string modelo;
         int anio;
@@ -26,7 +38,7 @@ class VehiculoCargar{
 
 class VehiculoServicio{
     public:
-        void mantenimiento(Vehiculo&);
+        void mostrarInfo(Vehiculo&);
 };
 
 #endif
