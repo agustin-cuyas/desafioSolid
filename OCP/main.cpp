@@ -30,7 +30,7 @@ void agregarVehiculo(vector<Vehiculo*>& flota) {
     cin >> tipo;
 
     Vehiculo* vehiculo = nullptr; // variable temporal para crear y configurar un nuevo vehiculo
-    VehiculoCargar* cargarvehiculo = nullptr; // aca ta mal
+    VehiculoCargar* cargarvehiculo = nullptr; 
 
     switch (tipo) {
         case enumVehiculo::enumauto:
@@ -94,7 +94,7 @@ void calculoCosto(const vector<Vehiculo*>& flota){
                 do{
                     cout << "Ingrese el numero de vehiculo: ";
                     cin >> indice;
-                    }while(indice<1 || indice > flota.size());
+                }while(indice<1 || indice > flota.size());
 
                 Vehiculo* vehiculo = flota[indice - 1];
                 vehiculo->calcularCostos();
@@ -103,9 +103,7 @@ void calculoCosto(const vector<Vehiculo*>& flota){
             else if(calcular == 'n')
                 quiereCalcular = false;
 
-    }while(quiereCalcular);
-
-            //(*mostrar).mostrarInfo(*vehiculo);
+        }while(quiereCalcular);
     }
 }
 
