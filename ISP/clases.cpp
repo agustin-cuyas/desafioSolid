@@ -5,63 +5,88 @@ Ver constructor electricidad para eliminar el error
 #include "mainHeader.hpp"
 #include "clases.hpp"
 
-Vehiculo::Vehiculo(const string& marca, const string& modelo, const int anio, double kilometraje) 
-         : marca(marca), modelo(modelo), anio(anio), kilometraje(kilometraje) {} //member initializer list
+Vehiculo::Vehiculo(const string& marca, const string& modelo, const int anio) 
+         : marca(marca), modelo(modelo), anio(anio) {} //member initializer list
 
-void Vehiculo::setMarca(const string& marca)
-{
-    Vehiculo::marca = marca;
+
+IMovil::IMovil(double kilometraje) : kilometraje(kilometraje){};
+
+void IMovil::mover(IMovil* vehiculo)
+{    
+    if(vehiculo->getMovimiento() == 1){
+        cout << "El vehiculo ya estaba en movimiento, deteniendo..." << endl;
+        vehiculo->setMovimiento(0);
+    }
+    else{
+        vehiculo->setMovimiento(1);
+        cout << "Vehiculo en movimiento" << endl;
+    }
 }
 
-string Vehiculo::getMarca() const
-{
-    return marca;
+IMantenimiento::IMantenimiento(bool necesitaMantenimiento) : necesitaMantenimiento(necesitaMantenimiento) {}
+
+void IMantenimiento::setMantenimiento(char mantenimiento){
+    if (mantenimiento == 's')
+        IMantenimiento::necesitaMantenimiento = true;
+    else if(mantenimiento == 'n')
+        IMantenimiento::necesitaMantenimiento = false;
 }
 
-void Vehiculo::setModelo(const string& modelo)
+void IMantenimiento::service()
 {
-    Vehiculo::modelo = modelo;
-}
-
-string Vehiculo::getModelo() const
-{
-    return modelo;
-}
-
-void Vehiculo::setAnio(const int anio)
-{
-    Vehiculo::anio = anio;
-}
-
-int Vehiculo::getAnio() const
-{
-    return anio;
-}
-
-void Vehiculo::setKilometraje(double km)
-{
-    Vehiculo::kilometraje = km;
-}
-
-double Vehiculo::getKilometraje()
-{
-    return kilometraje;
+    cout << "Haciendole el service al vehiculo" << endl;       
 }
 
 
+ILlenar::ILlenar(const int& capacidadCarga) : capacidadCarga(capacidadCarga){}
 
-void ILlenar::setCapacidad(const double capacidad)
+void ILlenar::llenar()
 {
-    ILlenar::capacidadCarga = capacidad;
+    int cargaPosible = getCapacidad() -  cajas;
+    double cargaDeseada;
+    bool cargaValida = false;
+
+    if(cargaPosible == 0)
+        cout << "Vehiculo lleno, no se puede cargar." << endl;
+    
+    else
+    {    
+        cout << "Puede cargar " << cargaPosible << " cajas más." <<  endl;
+
+        do{   
+            try
+            {
+                cout << "Cuantas cajas desea cargar? ";
+                cin >> cargaDeseada;
+                    
+                if (cargaDeseada > cargaPosible || cargaDeseada < 0)
+                    throw out_of_range("No se puede superar la capacidad ni ingresar numeros negativos.");
+
+                cargaValida = true; //si no hay excepciones, no se vuelve a pedir.
+
+                setCajas(cajas + cargaDeseada);
+            }
+            catch(const invalid_argument& ex){
+                cout << ex.what() << endl;
+            }
+            catch(const out_of_range& ex){
+                cout << ex.what() << endl;
+            }
+        }while (!cargaValida);    
+    }
 }
 
-int ILlenar::getCapacidad() const
+void ILlenar::setCajas(const int cajas)
 {
-    return capacidadCarga;
+    if (cajas > capacidadCarga){
+        cout << "Capacidad superada" << endl;
+        ILlenar::cajas = capacidadCarga;
+    }
+    else
+        ILlenar::cajas = cajas;
 }
 
-
-Auto::Auto(const string& marca, const string& modelo, const int anio, double kilometraje, const int cantidadPuertas) : Vehiculo(marca, modelo, anio, kilometraje),cantidadPuertas(cantidadPuertas) {} //los constructores no tienen acceso a las variables heredadas, por eso llamo al otro constructor
+Auto::Auto(const string& marca, const string& modelo, const int anio, double kilometraje, const int cantidadPuertas, const bool necesitaMantenimiento) : Vehiculo(marca, modelo, anio), IMovil(kilometraje),cantidadPuertas(cantidadPuertas), IMantenimiento(necesitaMantenimiento) {} //los constructores no tienen acceso a las variables heredadas, por eso llamo al otro constructor
 
 void Auto::setPuertas(const int puertas)
 {
@@ -75,7 +100,7 @@ int Auto::getPuertas() const
 
 
 
-Moto::Moto(const string& marca, const string& modelo, const int anio, double kilometraje, const bool tieneSidecar) : Vehiculo(marca, modelo, anio, kilometraje), tieneSidecar(tieneSidecar) {}
+Moto::Moto(const string& marca, const string& modelo, const int anio, double kilometraje, const bool tieneSidecar, const bool necesitaMantenimiento) : Vehiculo(marca, modelo, anio), IMovil(kilometraje), tieneSidecar(tieneSidecar), IMantenimiento(necesitaMantenimiento) {}
 
 
 void Moto::setSidecar(const char sidecar)
@@ -87,15 +112,18 @@ void Moto::setSidecar(const char sidecar)
     
 }
 
-bool Moto::getSidecar() const
+
+Camion::Camion(const string& marca, const string& modelo, const int anio, double kilometraje, const int capacidadCarga, const int& carga, const bool necesitaMantenimiento) : Vehiculo(marca, modelo, anio), IMovil(kilometraje), ILlenar(capacidadCarga), carga(carga), IMantenimiento(necesitaMantenimiento){}
+
+Remolque::Remolque(const string& marca, const string& modelo, const int anio, double kilometraje, bool esCerrado, const int capacidadCarga, const int& carga) : Vehiculo(marca, modelo, anio), IMovil(kilometraje), esCerrado(esCerrado), ILlenar(capacidadCarga), carga(carga){}
+
+void Remolque::setCerrado(const char esCerrado)
 {
-    return tieneSidecar;
+    if (esCerrado == 's')
+        Remolque::esCerrado = true;
+    else if(esCerrado == 'n')
+        Remolque::esCerrado = false;
 }
-
-
-
-Camion::Camion(const string& marca, const string& modelo, const int anio, double kilometraje, const double capacidadCarga) : Vehiculo(marca, modelo, anio, kilometraje), ILlenar(capacidadCarga){}
-
 
 
 
@@ -121,6 +149,10 @@ void AutoCargar::ingresarInfo(Vehiculo& vehiculo)
     cout << "Cantidad de puertas: ";
     cin >> cantidadPuertas;
     car.setPuertas(cantidadPuertas);
+    cout << "Tiene el service al día? (S/N):";
+    cin >> mantenimiento;
+    mantenimiento = tolower(mantenimiento);
+    car.setMantenimiento(mantenimiento);
     
 }
 
@@ -131,7 +163,7 @@ void MotoCargar::ingresarInfo(Vehiculo& vehiculo)
     
     cin.ignore();
   
-    cout << "\nIngrese los datos de la Moto.\n";
+    cout << "\nIngrese los datos de la moto.\n";
     cout << "Marca: ";
     cin >> marca;
     moto.setMarca(marca);
@@ -148,6 +180,10 @@ void MotoCargar::ingresarInfo(Vehiculo& vehiculo)
     cin >> tieneSidecar;
     tieneSidecar = tolower(tieneSidecar);
     moto.setSidecar(tieneSidecar);
+    cout << "Tiene el service al día? (S/N):";
+    cin >> mantenimiento;
+    mantenimiento = tolower(mantenimiento);
+    moto.setMantenimiento(mantenimiento);
 }
 
 void CamionCargar::ingresarInfo(Vehiculo& vehiculo)
@@ -169,10 +205,50 @@ void CamionCargar::ingresarInfo(Vehiculo& vehiculo)
     cout << "Kilometraje: ";
     cin >> km;
     camion.setKilometraje(km);
-    cout << "Capacidad de carga (kg): ";
+    cout << "Capacidad de carga (cajas): ";
     cin >> capacidadCarga;
     camion.setCapacidad(capacidadCarga);
+    cout << "Cajas cargadas: ";
+    cin >> cajas;
+    camion.setCajas(cajas);
+    cout << "Tiene el service al día? (S/N):";
+    cin >> mantenimiento;
+    mantenimiento = tolower(mantenimiento);
+    camion.setMantenimiento(mantenimiento);
 }
+
+void RemolqueCargar::ingresarInfo(Vehiculo& vehiculo)
+{
+    Remolque& remolque = dynamic_cast<Remolque&>(vehiculo);
+
+    cin.ignore();
+
+    cout << "\nIngrese los datos del remolque." << endl;
+    cout << "Marca: ";
+    cin >> marca;
+    remolque.setMarca(marca);
+    cout << "Modelo: ";
+    cin >> modelo;
+    remolque.setModelo(modelo);
+    cout << "Año: ";
+    cin >> anio;
+    remolque.setAnio(anio);
+    cout << "Kilometraje: ";
+    cin >> km;
+    remolque.setKilometraje(km);
+    cout << "El remolque es cerrado? (S/N):";
+    cin >> esCerrado;
+    esCerrado = tolower(esCerrado);
+    remolque.setCerrado(esCerrado);
+    cout << "Capacidad de carga (cajas): ";
+    cin >> capacidadCarga;
+    remolque.setCapacidad(capacidadCarga);
+    cout << "Cajas cargadas: ";
+    cin >> cajas;
+    remolque.setCajas(cajas);
+
+}
+
 
 
 void AutoMostrar::mostrarInfo(Vehiculo &vehiculo)
@@ -183,7 +259,8 @@ void AutoMostrar::mostrarInfo(Vehiculo &vehiculo)
          << "Modelo: " << car.getModelo() << endl
          << "Año: " << car.getAnio() << endl
          << "Kilometraje: " << car.getKilometraje() << endl
-         << "Cantidad de puertas: " << car.getPuertas() << endl;
+         << "Cantidad de puertas: " << car.getPuertas() << endl
+         << "Tiene service al día: " << (car.getMantenimiento() ? "Sí" : "No") << endl;
 }
 
 void MotoMostrar::mostrarInfo(Vehiculo& vehiculo)
@@ -194,7 +271,8 @@ void MotoMostrar::mostrarInfo(Vehiculo& vehiculo)
          << "Modelo: " << moto.getModelo() << endl
          << "Año: " << moto.getAnio() << endl
          << "Kilometraje: " << moto.getKilometraje() << endl
-         << "Tiene sidecar: " << (moto.getSidecar() ? "Sí" : "No") << endl;
+         << "Tiene sidecar: " << (moto.getSidecar() ? "Sí" : "No") << endl
+         << "Tiene service al día: " << (moto.getMantenimiento() ? "Sí" : "No") << endl;
 }
 
 void CamionMostrar::mostrarInfo(Vehiculo& vehiculo)
@@ -205,5 +283,21 @@ void CamionMostrar::mostrarInfo(Vehiculo& vehiculo)
          << "Modelo: " << camion.getModelo() << endl
          << "Año: " << camion.getAnio() << endl
          << "Kilometraje: " << camion.getKilometraje() << endl
-         << "Capacidad: " << camion.getCapacidad() << endl;
+         << "Capacidad: " << camion.getCapacidad() << endl
+         << "Cajas cargadas: " << camion.getCajas() << endl
+         << "Tiene service al día: " << (camion.getMantenimiento() ? "Sí" : "No") << endl;
 }
+
+void RemolqueMostrar::mostrarInfo(Vehiculo& vehiculo)
+{
+    Remolque& remolque = dynamic_cast<Remolque&>(vehiculo);
+
+    cout << "Marca: " << remolque.getMarca() << endl
+         << "Modelo: " << remolque.getModelo() << endl
+         << "Año: " << remolque.getAnio() << endl
+         << "Kilometraje: " << remolque.getKilometraje() << endl
+         << "Es cerrado: " << (remolque.getCerrado() ? "Sí" : "No") << endl
+         << "Capacidad: " << remolque.getCapacidad() << endl
+         << "Cajas cargadas: " << remolque.getCajas() << endl;
+}
+

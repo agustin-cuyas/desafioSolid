@@ -19,7 +19,8 @@ enum enumVehiculo   //si pongo Vehiculo lo confunde con la clase
 {
     enumauto = 1,   //si pongo auto lo confunde con el tipo de dato
     moto,
-    camion
+    camion,
+    remolque
 };
 
 void moverVehiculo(Vehiculo*);
@@ -32,6 +33,7 @@ void agregarVehiculo(vector<Vehiculo*>& flota) {
     cout << "1. Auto\n";
     cout << "2. Moto\n";
     cout << "3. Camion\n";
+    cout << "4. Remolque\n";
     cout << "Elija una opcion: ";
     cin >> tipo;
 
@@ -40,17 +42,21 @@ void agregarVehiculo(vector<Vehiculo*>& flota) {
 
     switch (tipo) {
         case enumVehiculo::enumauto:
-            vehiculo = new Auto("", "", 0, 0.0, 0);
+            vehiculo = new Auto("", "", 0, 0.0, 0, false);
             cargarvehiculo = new AutoCargar();
             break;
         case enumVehiculo::moto:
-            vehiculo = new Moto("", "", 0, 0.0, false);
+            vehiculo = new Moto("", "", 0, 0.0, false, false);
             cargarvehiculo = new MotoCargar();
             break;
         case enumVehiculo::camion:
-            vehiculo = new Camion("", "", 0, 0.0, 0.0);
+            vehiculo = new Camion("", "", 0, 0.0, 0, 0, false);
             cargarvehiculo = new CamionCargar();
             break;        
+        case enumVehiculo::remolque:
+            vehiculo = new Remolque("", "", 0, 0.0, false, 0, 0);
+            cargarvehiculo = new RemolqueCargar();
+            break;
         default:
             cout << "Opcion invalida.\n";
             return;
@@ -84,9 +90,23 @@ void mostrarVehiculos(const vector<Vehiculo*>& flota){
                 CamionMostrar mostrar;
                 mostrar.mostrarInfo(*camionPtr);
             }
-        }
+            else if(auto* remolquePtr = dynamic_cast<Remolque*>(vehiculo)){
+                RemolqueMostrar mostrar;
+                mostrar.mostrarInfo(*remolquePtr);
+            }
 
-        //dynamic_cast a las interfaces
+            ILlenar* carguero = dynamic_cast<ILlenar*>(vehiculo);
+            if (carguero){
+                cout << "Desea cargar el vehículo? (S/N): ";
+                char cargar;
+                cin >> cargar;
+                cargar = towlower(cargar);
+                if (cargar == 's')
+                    carguero->llenar();
+            }
+
+            cout << "\n";
+        }
 
         char mover;
         bool quiereMoverse = false;
@@ -114,6 +134,11 @@ void mostrarVehiculos(const vector<Vehiculo*>& flota){
         }while(quiereMoverse);
 
     }
+}
+
+void moverVehiculo(Vehiculo* vehiculo){
+    IMovil* aux = dynamic_cast<IMovil*>(vehiculo);
+    aux->mover(aux);
 }
 
 int main(){
