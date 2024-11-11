@@ -2,11 +2,6 @@
 Segregación de Interfaces: Los clientes no deben verse obligados a depender de interfaces que no utilizan.
 Ejemplo: Crear interfaces pequeñas y específicas como IMovil para métodos de movimiento y IMantenimiento para métodos de mantenimiento, en lugar de una interfaz única IVehiculo que incluya todo. Así, Automovil podría implementar ambas, pero Remolque podría implementar solo IMovil.
 */
-
-/*
-Hacer similar a cuando revisaba si el vehiculo era electrico para cargar, que en este caso si se puede hacer mantenimiento o llenar. Todos pueden ser conducidos, solucionar eso
-*/
-
 #include "mainHeader.hpp"
 
 enum Opcion{
@@ -77,7 +72,7 @@ void mostrarVehiculos(const vector<Vehiculo*>& flota){
         for (size_t i = 0; i < flota.size(); ++i) {    //size() devuelve una variable type_t, por eso defino i asi
             cout << "\nVehiculo " << i + 1 << ":\n";
             Vehiculo* vehiculo = flota[i];
-            
+
             if (auto* car = dynamic_cast<Auto*>(vehiculo)) {
                 AutoMostrar mostrar;
                 mostrar.mostrarInfo(*car);
@@ -94,6 +89,11 @@ void mostrarVehiculos(const vector<Vehiculo*>& flota){
                 RemolqueMostrar mostrar;
                 mostrar.mostrarInfo(*remolquePtr);
             }
+
+            IMantenimiento* mantenimiento = dynamic_cast<IMantenimiento*>(vehiculo);
+            
+            if(mantenimiento)
+                mantenimiento->service();
 
             ILlenar* carguero = dynamic_cast<ILlenar*>(vehiculo);
             if (carguero){

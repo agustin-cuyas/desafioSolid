@@ -1,7 +1,3 @@
-/*
-Ver constructor electricidad para eliminar el error
-*/
-
 #include "mainHeader.hpp"
 #include "clases.hpp"
 
@@ -27,14 +23,17 @@ IMantenimiento::IMantenimiento(bool necesitaMantenimiento) : necesitaMantenimien
 
 void IMantenimiento::setMantenimiento(char mantenimiento){
     if (mantenimiento == 's')
-        IMantenimiento::necesitaMantenimiento = true;
-    else if(mantenimiento == 'n')
         IMantenimiento::necesitaMantenimiento = false;
+    else if(mantenimiento == 'n')
+        IMantenimiento::necesitaMantenimiento = true;
 }
 
 void IMantenimiento::service()
 {
-    cout << "Haciendole el service al vehiculo" << endl;       
+    if (getMantenimiento() == 1){
+        cout << "Haciendole el service al vehiculo" << endl;  
+        setMantenimiento('s');  //sí tiene el service al día
+    }     
 }
 
 
@@ -88,17 +87,6 @@ void ILlenar::setCajas(const int cajas)
 
 Auto::Auto(const string& marca, const string& modelo, const int anio, double kilometraje, const int cantidadPuertas, const bool necesitaMantenimiento) : Vehiculo(marca, modelo, anio), IMovil(kilometraje),cantidadPuertas(cantidadPuertas), IMantenimiento(necesitaMantenimiento) {} //los constructores no tienen acceso a las variables heredadas, por eso llamo al otro constructor
 
-void Auto::setPuertas(const int puertas)
-{
-    Auto::cantidadPuertas = puertas;
-}
-
-int Auto::getPuertas() const
-{
-    return cantidadPuertas;
-}
-
-
 
 Moto::Moto(const string& marca, const string& modelo, const int anio, double kilometraje, const bool tieneSidecar, const bool necesitaMantenimiento) : Vehiculo(marca, modelo, anio), IMovil(kilometraje), tieneSidecar(tieneSidecar), IMantenimiento(necesitaMantenimiento) {}
 
@@ -149,7 +137,7 @@ void AutoCargar::ingresarInfo(Vehiculo& vehiculo)
     cout << "Cantidad de puertas: ";
     cin >> cantidadPuertas;
     car.setPuertas(cantidadPuertas);
-    cout << "Tiene el service al día? (S/N):";
+    cout << "Tiene el service al día? (S/N): ";
     cin >> mantenimiento;
     mantenimiento = tolower(mantenimiento);
     car.setMantenimiento(mantenimiento);
@@ -180,7 +168,7 @@ void MotoCargar::ingresarInfo(Vehiculo& vehiculo)
     cin >> tieneSidecar;
     tieneSidecar = tolower(tieneSidecar);
     moto.setSidecar(tieneSidecar);
-    cout << "Tiene el service al día? (S/N):";
+    cout << "Tiene el service al día? (S/N): ";
     cin >> mantenimiento;
     mantenimiento = tolower(mantenimiento);
     moto.setMantenimiento(mantenimiento);
@@ -211,7 +199,7 @@ void CamionCargar::ingresarInfo(Vehiculo& vehiculo)
     cout << "Cajas cargadas: ";
     cin >> cajas;
     camion.setCajas(cajas);
-    cout << "Tiene el service al día? (S/N):";
+    cout << "Tiene el service al día? (S/N): ";
     cin >> mantenimiento;
     mantenimiento = tolower(mantenimiento);
     camion.setMantenimiento(mantenimiento);
@@ -260,7 +248,7 @@ void AutoMostrar::mostrarInfo(Vehiculo &vehiculo)
          << "Año: " << car.getAnio() << endl
          << "Kilometraje: " << car.getKilometraje() << endl
          << "Cantidad de puertas: " << car.getPuertas() << endl
-         << "Tiene service al día: " << (car.getMantenimiento() ? "Sí" : "No") << endl;
+         << "Tiene service al día: " << (car.getMantenimiento() ? "No" : "Sí") << endl;
 }
 
 void MotoMostrar::mostrarInfo(Vehiculo& vehiculo)
@@ -272,7 +260,7 @@ void MotoMostrar::mostrarInfo(Vehiculo& vehiculo)
          << "Año: " << moto.getAnio() << endl
          << "Kilometraje: " << moto.getKilometraje() << endl
          << "Tiene sidecar: " << (moto.getSidecar() ? "Sí" : "No") << endl
-         << "Tiene service al día: " << (moto.getMantenimiento() ? "Sí" : "No") << endl;
+         << "Tiene service al día: " << (moto.getMantenimiento() ? "No" : "Sí") << endl;
 }
 
 void CamionMostrar::mostrarInfo(Vehiculo& vehiculo)
@@ -285,7 +273,7 @@ void CamionMostrar::mostrarInfo(Vehiculo& vehiculo)
          << "Kilometraje: " << camion.getKilometraje() << endl
          << "Capacidad: " << camion.getCapacidad() << endl
          << "Cajas cargadas: " << camion.getCajas() << endl
-         << "Tiene service al día: " << (camion.getMantenimiento() ? "Sí" : "No") << endl;
+         << "Tiene service al día: " << (camion.getMantenimiento() ? "No" : "Sí") << endl;
 }
 
 void RemolqueMostrar::mostrarInfo(Vehiculo& vehiculo)

@@ -1,13 +1,3 @@
-/*
-Agregar clase Remolque que herede vehiculo, movil y llenar.
-atributos: bool esCerrado
-
-IMantenimiento atributo bool necesitaMantenimiento y hacer similar a los vehiculos electricos que al cargar se pedía una caracteristica mas. método service cambia esta variable de ser necesario
-ILlenar atributo capacidadCarga (sacarsela a camion y poner en esta, total la hereda). método llenar que pida cantidad de cajas
-
-Constructores para estas clases, ver el de electricidad
-
-*/
 #ifndef CLASES_HPP
 #define CLASES_HPP
 
@@ -82,8 +72,8 @@ class Auto : public Vehiculo, public IMovil, public IMantenimiento{
     public:
         Auto(const string& marca, const string& modelo, const int anio, double kilometraje, const int cantidadPuertas, const bool necesitaMantenimiento);
         
-        void setPuertas(const int);
-        int getPuertas() const;
+        void setPuertas(const int puertas){ Auto::cantidadPuertas = puertas; }
+        int getPuertas() const{ return cantidadPuertas; }
 
     protected:
         int cantidadPuertas;    
